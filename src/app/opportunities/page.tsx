@@ -18,7 +18,7 @@ export default function OpportunitiesPage() {
   // Fetch opportunities
   useEffect(() => {
     const query = new URLSearchParams(filters as any).toString();
-    fetch(`http://127.0.0.1:8000/opportunities/?${query}`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/opportunities/?${query}`)
       .then(res => res.json())
       .then(setOpps)
       .catch(console.error);
@@ -38,15 +38,17 @@ export default function OpportunitiesPage() {
   // Apply handler
   const applyOpportunity = async (oppId: number) => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/tracker/tracker/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,
-        opportunity_id: oppId,
-        status: "applied", // just a string
-      }),
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tracker/tracker/`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    user_id: userId,
+    opportunity_id: oppId,
+    status: "applied",
+  }),
+});
+ // just a string
+      
 
     if (!res.ok) {
       const data = await res.json();
