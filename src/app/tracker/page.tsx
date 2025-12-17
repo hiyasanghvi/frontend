@@ -25,8 +25,11 @@ export default function TrackerPage() {
   const [items, setItems] = useState<TrackerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Backend base URL from .env
+  const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/tracker/tracker/user/${userId}`)
+    fetch(`${BASE_URL}/tracker/tracker/user/${userId}`)
       .then(res => res.json())
       .then(data => {
         setItems(Array.isArray(data) ? data : []);
@@ -37,21 +40,26 @@ export default function TrackerPage() {
         setItems([]);
         setLoading(false);
       });
-  }, []); // keep empty, userId is constant
+  }, [BASE_URL]);
 
   const updateStatus = async (id: number, status: string) => {
     const item = items.find(i => i.id === id);
     if (!item) return;
 
-    await fetch(`http://127.0.0.1:8000/tracker/tracker/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...item, status }),
-    });
+    try {
+      await fetch(`${BASE_URL}/tracker/tracker/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...item, status }),
+      });
 
-    setItems(prev =>
-      prev.map(i => (i.id === id ? { ...i, status } : i))
-    );
+      setItems(prev =>
+        prev.map(i => (i.id === id ? { ...i, status } : i))
+      );
+    } catch (err) {
+      console.error("Failed to update status", err);
+      alert("Error updating status");
+    }
   };
 
   if (loading) return <p className="loading">Loading tracker...</p>;
