@@ -15,6 +15,9 @@ export default function RecommendationsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Backend base URL from .env
+  const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   const handleSend = async () => {
     if (!input.trim()) return;
     setLoading(true);
@@ -22,7 +25,7 @@ export default function RecommendationsPage() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/recommend/chat?user_id=${userId}&message=${encodeURIComponent(input)}`
+        `${BASE_URL}/recommend/chat?user_id=${userId}&message=${encodeURIComponent(input)}`
       );
 
       if (!res.ok) throw new Error("Failed to fetch suggestions");
@@ -42,11 +45,11 @@ export default function RecommendationsPage() {
 
       <div className="chatbox">
         <input
-  type="text"
-  value={input}
-  onChange={(e) => setInput(e.target.value)}
-  placeholder="Type your skills to find opportunities..."
-/>
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your skills to find opportunities..."
+        />
 
         <button onClick={handleSend} disabled={loading}>
           {loading ? "Thinking..." : "Ask"}
